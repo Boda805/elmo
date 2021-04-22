@@ -16,7 +16,7 @@ dependencies:
 
 ```sh
 git clone https://github.com/Boda805/elmo.git
-cd hardhat-hackathon-boilerplate
+cd elmo
 npm install
 ```
 
