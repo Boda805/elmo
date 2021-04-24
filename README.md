@@ -15,30 +15,34 @@ The first things you need to do are cloning this repository and installing its
 dependencies:
 
 ```sh
+<<<<<<< HEAD
 git clone https://github.com/Boda805/elmo.git
 cd elmo
 npm install
+=======
+git clone https://github.com/nomiclabs/hardhat-hackathon-boilerplate.git
+cd hardhat-hackathon-boilerplate
+yarn install-all
+>>>>>>> multiple-contracts/master
 ```
 
 Once installed, let's run Hardhat's testing network:
 
 ```sh
-npx hardhat node
+yarn chain
 ```
 
 Then, on a new terminal, go to the repository's root folder and run this to
 deploy your contract:
 
 ```sh
-npx hardhat run scripts/deploy.js --network localhost
+yarn deploy
 ```
 
 Finally, we can run the frontend with:
 
 ```sh
-cd frontend
-npm install
-npm start
+yarn start-frontend
 ```
 
 > Note: There's [an issue in `ganache-core`](https://github.com/trufflesuite/ganache-core/issues/650) that can make the `npm install` step fail. 
