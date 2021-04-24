@@ -15,15 +15,9 @@ The first things you need to do are cloning this repository and installing its
 dependencies:
 
 ```sh
-<<<<<<< HEAD
-git clone https://github.com/Boda805/elmo.git
+git clone https://github.com/boda805/elmo.git
 cd elmo
-npm install
-=======
-git clone https://github.com/nomiclabs/hardhat-hackathon-boilerplate.git
-cd hardhat-hackathon-boilerplate
 yarn install-all
->>>>>>> multiple-contracts/master
 ```
 
 Once installed, let's run Hardhat's testing network:
