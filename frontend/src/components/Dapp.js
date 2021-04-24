@@ -1,3 +1,5 @@
+//Deprecated for App.js to reconfigure as functional, leaving up so we can still use for examples
+
 import React from "react";
 
 // We'll use ethers to interact with the Ethereum network and our contract
@@ -18,7 +20,7 @@ import { Transfer } from "./Transfer";
 import { TransactionErrorMessage } from "./TransactionErrorMessage";
 import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
 import { NoTokensMessage } from "./NoTokensMessage";
-import Main from "./Main";
+import App from "./App";
 
 // This is the Hardhat Network id, you might change it in the hardhat.config.js
 // Here's a list of network ids https://docs.metamask.io/guide/ethereum-provider.html#properties
@@ -91,7 +93,7 @@ export class Dapp extends React.Component {
 
     // If everything is loaded, we render the application.
     return (
-      <Main balance={this.state.balance}/>
+      <App balance={this.state.balance}/>
     );
   }
 
