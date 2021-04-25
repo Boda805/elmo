@@ -27,9 +27,9 @@ yarn compile
 
 Start the optimistic ethereum L1/L2 locally. See pinned message in Discord for now.
 
-In order to compile contracts for optimistic ethereum, we need to install the OVM compiler:
+In order to compile contracts for optimistic ethereum, we need to install the OVM compiler and we might as well install the OVM base contracts too:
 ```
-yarn add @eth-optimism/hardhat-ovm
+yarn add @eth-optimism/hardhat-ovm @eth-optimism/contracts
 yarn compile-ovm
 ```
 
