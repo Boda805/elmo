@@ -25,6 +25,7 @@ Once everything is installed, start the optimistic ethereum L1/L2 locally. See p
 In order to compile contracts for optimistic ethereum, we need to install the OVM compiler:
 ```
 yarn add @eth-optimism/hardhat-ovm
+yarn compile
 ```
 
 Then, on a new terminal, go to the repository's root folder and run this to
