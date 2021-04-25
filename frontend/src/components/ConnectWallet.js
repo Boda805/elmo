@@ -3,10 +3,11 @@ import React from "react";
 import { NetworkErrorMessage } from "./NetworkErrorMessage";
 
 export function ConnectWallet({ connectWallet, networkError, dismiss }) {
+
   return (
-    <div className="container">
-      <div className="row justify-content-md-center">
-        <div className="col-12 text-center">
+    
+      <div>
+        <div className="col-12">
           {/* Metamask network should be set to Localhost:8545. */}
           {networkError && (
             <NetworkErrorMessage 
@@ -15,8 +16,7 @@ export function ConnectWallet({ connectWallet, networkError, dismiss }) {
             />
           )}
         </div>
-        <div className="col-6 p-4 text-center">
-          <p>Please connect to your wallet.</p>
+        <div className="col-12 p-3">
           <button
             className="btn btn-warning"
             type="button"
@@ -26,6 +26,6 @@ export function ConnectWallet({ connectWallet, networkError, dismiss }) {
           </button>
         </div>
       </div>
-    </div>
+   
   );
 }

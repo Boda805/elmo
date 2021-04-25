@@ -15,30 +15,35 @@ The first things you need to do are cloning this repository and installing its
 dependencies:
 
 ```sh
-git clone https://github.com/Boda805/elmo.git
+git clone https://github.com/boda805/elmo.git
 cd elmo
-npm install
+yarn install-all
 ```
 
-Once installed, let's run Hardhat's testing network:
+Then we can compile contracts for the EVM:
+```
+yarn compile
+```
 
-```sh
-npx hardhat node
+Start the optimistic ethereum L1/L2 locally. See pinned message in Discord for now.
+
+In order to compile contracts for optimistic ethereum, we need to install the OVM compiler:
+```
+yarn add @eth-optimism/hardhat-ovm
+yarn compile-ovm
 ```
 
 Then, on a new terminal, go to the repository's root folder and run this to
 deploy your contract:
 
 ```sh
-npx hardhat run scripts/deploy.js --network localhost
+yarn deploy-ovm
 ```
 
 Finally, we can run the frontend with:
 
 ```sh
-cd frontend
-npm install
-npm start
+yarn start-frontend
 ```
 
 > Note: There's [an issue in `ganache-core`](https://github.com/trufflesuite/ganache-core/issues/650) that can make the `npm install` step fail. 
