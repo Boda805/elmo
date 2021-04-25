@@ -20,17 +20,18 @@ cd elmo
 yarn install-all
 ```
 
-Once installed, let's run Hardhat's testing network:
+Once everything is installed, start the optimistic ethereum L1/L2 locally. See pinned message in Discord for now.
 
-```sh
-yarn chain
+In order to compile contracts for optimistic ethereum, we need to install the OVM compiler:
+```
+yarn add @eth-optimism/hardhat-ovm
 ```
 
 Then, on a new terminal, go to the repository's root folder and run this to
 deploy your contract:
 
 ```sh
-yarn deploy
+yarn deploy-oe
 ```
 
 Finally, we can run the frontend with:
