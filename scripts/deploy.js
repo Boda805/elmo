@@ -92,6 +92,10 @@ async function main() {
   await tx0.wait()
 
   console.log("All contracts deployed!")
+  console.log("L1 ERC20 Address: " + L1_ERC20.address)
+  console.log("L2 ERC20 Address: " + L2_ERC20.address)
+  console.log("L1 ERC20 Gateway Address: " + L1_ERC20Gateway.address)
+
 
 }
 
