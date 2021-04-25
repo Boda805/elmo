@@ -20,19 +20,24 @@ cd elmo
 yarn install-all
 ```
 
-Once everything is installed, start the optimistic ethereum L1/L2 locally. See pinned message in Discord for now.
+Then we can compile contracts for the EVM:
+```
+yarn compile
+```
+
+Start the optimistic ethereum L1/L2 locally. See pinned message in Discord for now.
 
 In order to compile contracts for optimistic ethereum, we need to install the OVM compiler:
 ```
 yarn add @eth-optimism/hardhat-ovm
-yarn compile
+yarn compile-ovm
 ```
 
 Then, on a new terminal, go to the repository's root folder and run this to
 deploy your contract:
 
 ```sh
-yarn deploy-oe
+yarn deploy-ovm
 ```
 
 Finally, we can run the frontend with:

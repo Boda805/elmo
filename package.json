@@ -7,9 +7,10 @@
   },
   "scripts": {
     "chain": "hardhat node",
-    "compile": "npx hardhat --network optimism compile",
+    "compile": "npx hardhat compile",
+    "compile-ovm": "npx hardhat --network optimism compile",
     "deploy": "hardhat run scripts/deploy.js --network localhost",
-    "deploy-oe": "hardhat run scripts/deploy.js --network optimism",
+    "deploy-ovm": "hardhat run scripts/deploy.js --network optimism",
     "console": "hardhat console --network localhost",
     "test": "hardhat test",
     "start-frontend": "cd frontend && yarn start",
