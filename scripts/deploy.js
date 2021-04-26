@@ -17,23 +17,16 @@ const factory__L1_ERC20Gateway = getContractFactory('OVM_L1ERC20Gateway')
 // yours, or create new ones.
 async function main() {
 
-  // This is just a convenience check
-  if (network.name === "hardhat") {
-    console.warn(
-      "You are trying to deploy a contract to the Hardhat Network, which" +
-      "gets automatically created and destroyed every time. Use the Hardhat" +
-      " option '--network localhost'"
-    );
-  }
-
   // Set up our RPC provider connections.
   const l1RpcProvider = new ethers.providers.JsonRpcProvider(process.env.INFURA_KOVAN_URL)
   const l2RpcProvider = new ethers.providers.JsonRpcProvider(process.env.OVM_KOVAN_RPC_ENDPOINT)
 
+  //console.log(l2RpcProvider)
+
   // Set up our wallets (using a default private key with 10k ETH allocated to it).
   // Need two wallets objects, one for interacting with L1 and one for interacting with L2.
   // Both will use the same private key.
-  const key = process.env.METAMASK_KOVAN_PRIVATE_KEY
+  const key = process.env.METAMASK_PRIVATE_KEY_KOVAN
   const l1Wallet = new ethers.Wallet(key, l1RpcProvider)
   const l2Wallet = new ethers.Wallet(key, l2RpcProvider)
 
