@@ -10,9 +10,6 @@ module.exports = {
   solidity: "0.7.6",
 
   networks: {
-    hardhat: {
-      chainId: 1337
-    },
     optimism: {
       chainId: 69,
       url: 'https://kovan.optimism.io',
