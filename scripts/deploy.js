@@ -1,4 +1,5 @@
 const ethers = require('ethers');
+const process = require('process');
 const { Watcher } = require('@eth-optimism/watcher');
 const { getContractFactory } = require('@eth-optimism/contracts');
 
@@ -26,18 +27,18 @@ async function main() {
   }
 
   // Set up our RPC provider connections.
-  const l1RpcProvider = new ethers.providers.JsonRpcProvider('http://localhost:9545')
-  const l2RpcProvider = new ethers.providers.JsonRpcProvider('http://localhost:8545')
+  const l1RpcProvider = new ethers.providers.JsonRpcProvider(process.env.INFURA_KOVAN_URL)
+  const l2RpcProvider = new ethers.providers.JsonRpcProvider(process.env.OVM_KOVAN_RPC_ENDPOINT)
 
   // Set up our wallets (using a default private key with 10k ETH allocated to it).
   // Need two wallets objects, one for interacting with L1 and one for interacting with L2.
   // Both will use the same private key.
-  const key = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
+  const key = process.env.METAMASK_KOVAN_PRIVATE_KEY
   const l1Wallet = new ethers.Wallet(key, l1RpcProvider)
   const l2Wallet = new ethers.Wallet(key, l2RpcProvider)
 
   // L1 messenger address depends on the deployment, this is default for our local deployment.
-  const l1MessengerAddress = '0x59b670e9fA9D0A427751Af201D676719a970857b'
+  const l1MessengerAddress = process.env.OVM_KOVAN_L1_MESSENGER_ADDRESS
   // L2 messenger address is always the same.
   const l2MessengerAddress = '0x4200000000000000000000000000000000000007'
 

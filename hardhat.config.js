@@ -23,6 +23,10 @@ module.exports = {
       // balance (yet, sorry!).
       gasPrice: 0,
       ovm: true // This sets the network as using the ovm and ensure contract will be compiled against that.
+    },
+    kovan: {
+      chainId: 69,
+      url: "https://kovan.optimism.io"
     }
   }
 
