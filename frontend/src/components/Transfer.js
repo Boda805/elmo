@@ -1,43 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
+import { Form, Input, Button, Space } from 'antd';
 
-export function Transfer({ transferTokens, tokenSymbol }) {
-  return (
-    <div>
-      <h4>Transfer</h4>
-      <form
-        onSubmit={(event) => {
-          // This function just calls the transferTokens callback with the
-          // form's data.
-          event.preventDefault();
+const Transfer = ({ transfer }) => {
+    const [form] = Form.useForm();
+    const [to, setTo] = useState('');
+    const [amount, setAmount] = useState(0);
 
-          const formData = new FormData(event.target);
-          const to = formData.get("to");
-          const amount = formData.get("amount");
+    const layout = {
+        labelCol: { span: 8 },
+        wrapperCol: { span: 6 },
+      };
+      const tailLayout = {
+        wrapperCol: { offset: 8, span: 6 },
+      };
 
-          if (to && amount) {
-            transferTokens(to, amount);
-          }
-        }}
-      >
-        <div className="form-group">
-          <label>Amount of {tokenSymbol}</label>
-          <input
-            className="form-control"
-            type="number"
-            step="1"
-            name="amount"
-            placeholder="1"
-            required
-          />
+    return(
+        <div>
+            <Form {...layout} form={form} name="control-hooks">
+                <Form.Item name="to" label="To" rules={[{ required: true }]}>
+                    <Input onChange={e => setTo(e.target.value)}/>
+                </Form.Item>
+
+                <Form.Item name="amount" label="Amount" rules={[{ required: true }]}>
+                    <Input onChange={e => setAmount(e.target.value)} />
+                </Form.Item>
+
+                <Form.Item {...tailLayout}>
+                    <Button onClick={() => transfer(to, amount)} type="primary" htmlType="submit">
+                        Submit
+                    </Button>
+                </Form.Item>
+            </Form>
         </div>
-        <div className="form-group">
-          <label>Recipient address</label>
-          <input className="form-control" type="text" name="to" required />
-        </div>
-        <div className="form-group">
-          <input className="btn btn-primary" type="submit" value="Transfer" />
-        </div>
-      </form>
-    </div>
-  );
+        
+    );
 }
+
+
+export default Transfer;
