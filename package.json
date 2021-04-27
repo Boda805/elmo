@@ -11,6 +11,7 @@
     "compile-ovm": "npx hardhat --network optimism compile",
     "deploy": "hardhat run scripts/deploy.js --network localhost",
     "deploy-ovm": "hardhat run scripts/deploy.js --network optimism",
+    "deploy-kovan": "hardhat run scripts/deploy.js --network kovan",
     "console": "hardhat console --network localhost",
     "test": "hardhat test",
     "start-frontend": "cd frontend && yarn start",

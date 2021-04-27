@@ -1,4 +1,5 @@
 const ethers = require('ethers');
+const process = require('process');
 const { Watcher } = require('@eth-optimism/watcher');
 const { getContractFactory } = require('@eth-optimism/contracts');
 
@@ -14,30 +15,21 @@ const factory__L1_ERC20Gateway = getContractFactory('OVM_L1ERC20Gateway')
 
 // This is a script for deploying your contracts. You can adapt it to deploy
 // yours, or create new ones.
-async function main() {
-
-  // This is just a convenience check
-  if (network.name === "hardhat") {
-    console.warn(
-      "You are trying to deploy a contract to the Hardhat Network, which" +
-      "gets automatically created and destroyed every time. Use the Hardhat" +
-      " option '--network localhost'"
-    );
-  }
+async function main () {
 
   // Set up our RPC provider connections.
-  const l1RpcProvider = new ethers.providers.JsonRpcProvider('http://localhost:9545')
-  const l2RpcProvider = new ethers.providers.JsonRpcProvider('http://localhost:8545')
+  const l1RpcProvider = new ethers.providers.JsonRpcProvider('https://eth-kovan.alchemyapi.io/v2/DjNrM2B5hxtPWLVfZu8ExupvxSoTigC6')
+  const l2RpcProvider = new ethers.providers.JsonRpcProvider('https://kovan.optimism.io')
 
   // Set up our wallets (using a default private key with 10k ETH allocated to it).
   // Need two wallets objects, one for interacting with L1 and one for interacting with L2.
   // Both will use the same private key.
-  const key = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
+  const key = new ethers.Wallet.createRandom().privateKey
   const l1Wallet = new ethers.Wallet(key, l1RpcProvider)
   const l2Wallet = new ethers.Wallet(key, l2RpcProvider)
 
   // L1 messenger address depends on the deployment, this is default for our local deployment.
-  const l1MessengerAddress = '0x59b670e9fA9D0A427751Af201D676719a970857b'
+  const l1MessengerAddress = '0x48062eD9b6488EC41c4CfbF2f568D7773819d8C9'
   // L2 messenger address is always the same.
   const l2MessengerAddress = '0x4200000000000000000000000000000000000007'
 
@@ -57,7 +49,8 @@ async function main() {
   console.log('Deploying L1 ERC20...')
   const L1_ERC20 = await factory__L1_ERC20.connect(l1Wallet).deploy(
     1234, //initialSupply
-    'L1 ERC20' //name
+    'L1 ERC20', //name
+    { gasPrice: 0 }
   )
   await L1_ERC20.deployTransaction.wait()
 
@@ -66,9 +59,7 @@ async function main() {
   const L2_ERC20 = await factory__L2_ERC20.connect(l2Wallet).deploy(
     l2MessengerAddress,
     'L2 ERC20', //name
-    {
-      gasPrice: 0
-    }
+    { gasPrice: 0 }
   )
   await L2_ERC20.deployTransaction.wait()
 
@@ -77,7 +68,8 @@ async function main() {
   const L1_ERC20Gateway = await factory__L1_ERC20Gateway.connect(l1Wallet).deploy(
     L1_ERC20.address,
     L2_ERC20.address,
-    l1MessengerAddress
+    l1MessengerAddress,
+    { gasPrice: 0 }
   )
   await L1_ERC20Gateway.deployTransaction.wait()
 
@@ -85,9 +77,7 @@ async function main() {
   console.log('Initializing L2 ERC20...')
   const tx0 = await L2_ERC20.init(
     L1_ERC20Gateway.address,
-    {
-      gasPrice: 0
-    }
+    { gasPrice: 0 }
   )
   await tx0.wait()
 
