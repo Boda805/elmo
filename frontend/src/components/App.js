@@ -115,8 +115,9 @@ const App = () => {
       }
     }
     
+    //How do I get this to work..
     const _tokenBalance = async () => {
-      const balance = await _token.balanceOf('0x595b57BA293565b65CfB0b0b0e757B88Ad788b4a')
+      const balance = await _token.balanceOf(address)
       return balance
     }
 
