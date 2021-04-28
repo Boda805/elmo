@@ -88,12 +88,9 @@ const App = () => {
  
         setTransactionError(undefined);
 
-        //I believe getSigner should have 'address' as argument, but when I use
-        //MetaMask I get error that address is outside of network. Can I add personal
-        //Address into local deployment?
         const signedToken = _token.connect(_provider.getSigner(address));
         
-        const tx = await _token.transfer(to, amount);
+        const tx = await signedToken.transfer(to, amount);
         setTxBeingSent(tx.hash);
 
         const receipt = await tx.wait();
