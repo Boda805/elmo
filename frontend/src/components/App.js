@@ -10,19 +10,18 @@ import { ethers } from "ethers";
 
 // We import the contract's artifacts and address here, as we are going to be
 // using them with ethers
-import TokenArtifact from "../contracts/Token.json";
+import ERC20Artifact from "../contracts/ERC20.json";
 import contractAddress from "../contracts/contract-address.json";
 import { NETWORKS } from "../constants.js";
 
 const HARDHAT_NETWORK_ID = '1337';
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
-const targetNetwork = NETWORKS['localhost'];
+const targetNetwork = NETWORKS['kovan'];
 
 const App = () => {
     const [route, setRoute] = useState();
     const [address, setAddress] = useState();
     const [tokenName, setTokenName] = useState();
-    const [tokenSymbol, setTokenSymbol] = useState();
     const [balance, setBalance] = useState();
     const [txBeingSent, setTxBeingSent] = useState();
     const [transactionError, setTransactionError] = useState();
@@ -35,36 +34,27 @@ const App = () => {
     //const _provider = new ethers.providers.Web3Provider(window.ethereum);
     
     const _token = new ethers.Contract(
-      contractAddress.Token,
-      TokenArtifact.abi,
-      _provider.getSigner(0)
+      contractAddress.ERC20,
+      ERC20Artifact.abi,
+      _provider
     );
 
-    const _checkNetwork = ()=>  {
-      if (window.ethereum.networkVersion === HARDHAT_NETWORK_ID) {
-        return true;
-      }
-      setNetworkError('Please connect Metamask to Localhost:8545')
-      return false;
-    }
     
-    useEffect(() => {
-        const fetch = async () => {
-        const _tokenName = await _token.name();
-        const _tokenSymbol = await _token.symbol();
-        setTokenName(_tokenName);
-        setTokenSymbol(_tokenSymbol);
-      }
-      fetch();
-    }, []);
-
+    // const _checkNetwork = ()=>  {
+    //   if (window.ethereum.networkVersion === HARDHAT_NETWORK_ID) {
+    //     return true;
+    //   }
+    //   setNetworkError('Please connect Metamask to Localhost:8545')
+    //   return false;
+    // }
+    
     
     const _connectWallet = async (t) => {
       const [selectedAddress] = await window.ethereum.enable();
 
-      if (!_checkNetwork()) {
-        return;
-      }
+      // if (!_checkNetwork()) {
+      //   return;
+      // }
   
       _initialize(selectedAddress);
 
@@ -101,7 +91,7 @@ const App = () => {
         //I believe getSigner should have 'address' as argument, but when I use
         //MetaMask I get error that address is outside of network. Can I add personal
         //Address into local deployment?
-        //const signedToken = _token.connect(_provider.getSigner(0));
+        const signedToken = _token.connect(_provider.getSigner(address));
         
         const tx = await _token.transfer(to, amount);
         setTxBeingSent(tx.hash);
@@ -123,6 +113,11 @@ const App = () => {
       } finally {
         setTxBeingSent(undefined);
       }
+    }
+    
+    const _tokenBalance = async () => {
+      const balance = await _token.balanceOf('0x595b57BA293565b65CfB0b0b0e757B88Ad788b4a')
+      return balance
     }
 
     useEffect(() => {
@@ -150,6 +145,7 @@ const App = () => {
   
             <Route exact path="/transfer"><Transfer 
                                              transfer={_transferTokens}
+                                             tokenBalance={_tokenBalance}
                                           />
             </Route>
   

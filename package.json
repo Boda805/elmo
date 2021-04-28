@@ -7,8 +7,8 @@
   },
   "scripts": {
     "chain": "hardhat node",
-    "compile": "npx hardhat compile",
-    "compile-ovm": "npx hardhat --network optimism compile",
+    "compile": "yarn hardhat compile",
+    "compile-ovm": "yarn hardhat --network optimism compile",
     "deploy": "hardhat run scripts/deploy.js --network localhost",
     "deploy-ovm": "hardhat run scripts/deploy.js --network optimism",
     "deploy-kovan": "hardhat run scripts/deploy.js --network kovan",
@@ -44,6 +44,6 @@
   "dependencies": {
     "@eth-optimism/contracts": "^0.2.7",
     "@eth-optimism/hardhat-ovm": "^0.0.3",
-    "@eth-optimism/watcher": "*"
+    "@eth-optimism/watcher": "^0.0.1-alpha.9"
   }
 }

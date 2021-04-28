@@ -24,5 +24,20 @@ export const NETWORK = (chainId)=>{
           blockExplorer: '',
           rpcUrl: "http://" + window.location.hostname + ":8545",
       },
+      optimism: {
+        name: "optimism",
+        color: '#ff8b9e',
+        chainId: 69,
+        blockExplorer: '',
+        rpcUrl: "https://kovan.optimism.io",
+      },
+      kovan: {
+        name: "kovan",
+        color: '#7003DD',
+        chainId: 42,
+        blockExplorer: 'https://kovan.etherscan.io/',
+        rpcUrl: "https://kovan.infura.io/v3/22403b346d9844e9ac9fcedbee9f8399",
+      },
 
   }
+
