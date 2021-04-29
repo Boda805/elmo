@@ -27,11 +27,9 @@ const App = () => {
     const [transactionError, setTransactionError] = useState();
     const [networkError, setNetworkError] = useState();
 
-    // We first initialize ethers by creating a provider using window.ethereum
-    // Confused here if getSigner should be here for Account 0 or later using 
-    // my MetaMask address
-    const _provider = new ethers.providers.JsonRpcProvider(targetNetwork.rpcUrl);
-    //const _provider = new ethers.providers.Web3Provider(window.ethereum);
+    //Web3Provider works for transactions but not JsonRpcProvider    
+    //const _provider = new ethers.providers.JsonRpcProvider(targetNetwork.rpcUrl);
+    const _provider = new ethers.providers.Web3Provider(window.ethereum);
     
     const _token = new ethers.Contract(
       contractAddress.ERC20,
@@ -89,10 +87,10 @@ const App = () => {
         setTransactionError(undefined);
 
         const signedToken = _token.connect(_provider.getSigner(address));
-        
+        console.log(signedToken);
         const tx = await signedToken.transfer(to, amount);
         setTxBeingSent(tx.hash);
-
+        console.log(txBeingSent);
         const receipt = await tx.wait();
   
         if (receipt.status === 0) {
@@ -113,10 +111,10 @@ const App = () => {
     }
     
     //How do I get this to work..
-    const _tokenBalance = async () => {
-      const balance = await _token.balanceOf(address)
-      return balance
-    }
+    // const _tokenBalance = () => {
+    //   const balance = _token.balanceOf(address)
+    //   setBalance(balance);
+    // }
 
     useEffect(() => {
       setRoute(window.location.pathname)
@@ -143,7 +141,7 @@ const App = () => {
   
             <Route exact path="/transfer"><Transfer 
                                              transfer={_transferTokens}
-                                             tokenBalance={_tokenBalance}
+                                             //tokenBalance={_tokenBalance}
                                           />
             </Route>
   
