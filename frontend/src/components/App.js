@@ -4,19 +4,19 @@ import Header from './Header';
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import { Row, Col, Button, Menu, Alert, Switch as SwitchD } from "antd";
 import Transfer from "./Transfer"
+import Bridge from "./Bridge"
 
-// We'll use ethers to interact with the Ethereum network and our contract
 import { ethers } from "ethers";
 
-// We import the contract's artifacts and address here, as we are going to be
-// using them with ethers
 import ERC20Artifact from "../contracts/ERC20.json";
+import L1_GatewayArtifact from "../contracts/OVM_L1ERC20Gateway.json";
 import contractAddress from "../contracts/contract-address.json";
 import { NETWORKS } from "../constants.js";
 
-const HARDHAT_NETWORK_ID = '1337';
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
 const targetNetwork = NETWORKS['kovan'];
+//node_modules\@eth-optimism\contracts\artifacts\contracts\optimistic-ethereum\OVM\bridge\tokens\OVM_L1ERC20Gateway.sol
+
 
 const App = () => {
     const [route, setRoute] = useState();
@@ -30,23 +30,19 @@ const App = () => {
     //Web3Provider works for transactions but not JsonRpcProvider    
     //const _provider = new ethers.providers.JsonRpcProvider(targetNetwork.rpcUrl);
     const _provider = new ethers.providers.Web3Provider(window.ethereum);
-    
+
     const _token = new ethers.Contract(
       contractAddress.ERC20,
       ERC20Artifact.abi,
       _provider
     );
 
-    
-    // const _checkNetwork = ()=>  {
-    //   if (window.ethereum.networkVersion === HARDHAT_NETWORK_ID) {
-    //     return true;
-    //   }
-    //   setNetworkError('Please connect Metamask to Localhost:8545')
-    //   return false;
-    // }
-    
-    
+    const _gateway = new ethers.Contract(
+      contractAddress.L1_Gateway,
+      L1_GatewayArtifact.abi,
+      _provider
+    );
+      
     const _connectWallet = async (t) => {
       const [selectedAddress] = await window.ethereum.enable();
 
@@ -54,32 +50,19 @@ const App = () => {
       //   return;
       // }
   
-      _initialize(selectedAddress);
+      setAddress(selectedAddress);
 
-      // *Needs to be updated to fit*
-      // // We reinitialize it whenever the user changes their account.
-      // window.ethereum.on("accountsChanged", ([newAddress]) => {
-      //   // `accountsChanged` event can be triggered with an undefined newAddress.
-      //   // This happens when the user removes the Dapp from the "Connected
-      //   // list of sites allowed access to your addresses" (Metamask > Settings > Connections)
-      //   // To avoid errors, we reset the dapp state 
-      //   if (newAddress === undefined) {
-      //     return this._resetState();
-      //   }
-        
-      //   this._initialize(newAddress);
-      // });
+      // We reinitialize it whenever the user changes their account.
+      window.ethereum.on("accountsChanged", ([newAddress]) => {    
+        setAddress(newAddress);
+      });
       
-      // // We reset the dapp state if the network is changed
+      // We reset the dapp state if the network is changed
       // window.ethereum.on("networkChanged", ([networkId]) => {
       //   this._resetState();
       // });
     }
   
-    const _initialize = (userAddress) => {
-      setAddress(userAddress);
-    }
-
     const _transferTokens = async (to, amount) => {
 
       try {
@@ -87,7 +70,6 @@ const App = () => {
         setTransactionError(undefined);
 
         const signedToken = _token.connect(_provider.getSigner(address));
-        console.log(signedToken);
         const tx = await signedToken.transfer(to, amount);
         setTxBeingSent(tx.hash);
         console.log(txBeingSent);
@@ -110,17 +92,48 @@ const App = () => {
       }
     }
     
-    //How do I get this to work..
-    // const _tokenBalance = () => {
-    //   const balance = _token.balanceOf(address)
-    //   setBalance(balance);
-    // }
+    const _deposit = async (amount) => {
+      try {
+        const signedGateway = _gateway.connect(_provider.getSigner(address));
+        const tx = await signedGateway.deposit(amount)  
+        setTxBeingSent(tx.hash);
+        console.log(txBeingSent);
+        const receipt = await tx.wait();
+
+        if (receipt.status === 0) {
+          throw new Error("Transaction failed");
+      }
+
+      } catch (error) {
+
+        if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {
+          return;
+        }
+
+        console.error(error);
+        setTransactionError(error);
+      } finally {
+        setTxBeingSent(undefined);
+      }
+    }
+
+    useEffect(() => {
+      if (address !== undefined) {
+        _tokenBalance()
+      }
+    }, [route, address]);
+    
+    const _tokenBalance = async () => {
+      if (address !== undefined) {
+        const balance = await _token.balanceOf(address) / (1e70) //Used to shrink the number, currently getting overflow
+        setBalance(balance);        
+      }
+    }
 
     useEffect(() => {
       setRoute(window.location.pathname)
     }, [setRoute]);
 
-  
     return (
       <div className="Main">
         <Header address={address} connectWallet={_connectWallet}/> 
@@ -141,11 +154,13 @@ const App = () => {
   
             <Route exact path="/transfer"><Transfer 
                                              transfer={_transferTokens}
-                                             //tokenBalance={_tokenBalance}
+                                             tokenBalance={balance}
                                           />
             </Route>
   
-            <Route exact path="/bridge"></Route>
+            <Route exact path="/bridge">
+              <Bridge deposit={_deposit}/>
+            </Route>
 
           </Switch>
         </BrowserRouter>

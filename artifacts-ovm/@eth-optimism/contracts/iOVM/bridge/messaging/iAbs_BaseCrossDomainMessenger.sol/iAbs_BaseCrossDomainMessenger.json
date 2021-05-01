@@ -13,6 +13,19 @@
           "type": "bytes32"
         }
       ],
+      "name": "FailedRelayedMessage",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "msgHash",
+          "type": "bytes32"
+        }
+      ],
       "name": "RelayedMessage",
       "type": "event"
     },
