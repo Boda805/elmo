@@ -5,11 +5,12 @@ import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import { Row, Col, Button, Menu, Alert, Switch as SwitchD } from "antd";
 import Transfer from "./Transfer"
 import Bridge from "./Bridge"
+import Withdraw from "./Withdraw";
 
 import { ethers } from "ethers";
 
 import ERC20Artifact from "../contracts/ERC20.json";
-import L2ERC20Artifact from "../contracts/ERC20.json";
+import L2ERC20Artifact from "../contracts/L2DepositedERC20.json";
 import L1_GatewayArtifact from "../contracts/OVM_L1ERC20Gateway.json";
 import contractAddress from "../contracts/contract-address.json";
 import { NETWORKS } from "../constants.js";
@@ -106,11 +107,42 @@ const App = () => {
     const _deposit = async (amount) => {
       try {
         const signedGateway = _gateway.connect(_provider.getSigner(address));
-        const signedToken = _token.connect(_provider.getSigner(address));
-        console.log('approving transfer...')
-        const tx1 = await signedToken.approve(contractAddress.L1_Gateway, amount);
+        //Looks to not need approval
+        //const signedToken = _token.connect(_provider.getSigner(address));
+        //console.log('approving transfer...')
+        //const tx1 = await signedToken.approve(contractAddress.L1_Gateway, amount);
         console.log('depositing to L2...')
         const tx = await signedGateway.deposit(amount)  
+        console.log(tx);
+        setTxBeingSent(tx.hash);
+        console.log(txBeingSent);
+        const receipt = await tx.wait();
+
+        if (receipt.status === 0) {
+          throw new Error("Transaction failed");
+      }
+
+      } catch (error) {
+
+        if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {
+          return;
+        }
+
+        console.error(error);
+        setTransactionError(error);
+      } finally {
+        setTxBeingSent(undefined);
+      }
+    }
+
+    const _withdraw = async (amount) => {
+      try {
+        const signedGateway = _gateway.connect(_provider.getSigner(address));
+        const signedToken = _token.connect(_provider.getSigner(address));
+        //console.log('approving transfer...')
+        //const tx1 = await signedToken.approve(contractAddress.L1_Gateway, amount);
+        console.log('withdraw to L1...')
+        const tx = await signedToken.withdraw(amount)  
         console.log(tx);
         setTxBeingSent(tx.hash);
         console.log(txBeingSent);
@@ -166,12 +198,15 @@ const App = () => {
             </Menu.Item>
           </Menu>
           <Switch>
-            <Route exact path="/withdraw"></Route>
+            <Route exact path="/withdraw">
+              <Withdraw withdraw={_withdraw}/>
+            </Route>
   
-            <Route exact path="/transfer"><Transfer 
-                                             transfer={_transferTokens}
-                                             tokenBalance={balance}
-                                          />
+            <Route exact path="/transfer">
+              <Transfer 
+                transfer={_transferTokens}
+                tokenBalance={balance}
+              />
             </Route>
   
             <Route exact path="/bridge">
