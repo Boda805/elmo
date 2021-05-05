@@ -9,13 +9,13 @@ import Bridge from "./Bridge"
 import { ethers } from "ethers";
 
 import ERC20Artifact from "../contracts/ERC20.json";
+import L2ERC20Artifact from "../contracts/ERC20.json";
 import L1_GatewayArtifact from "../contracts/OVM_L1ERC20Gateway.json";
 import contractAddress from "../contracts/contract-address.json";
 import { NETWORKS } from "../constants.js";
 
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
 const targetNetwork = NETWORKS['kovan'];
-//node_modules\@eth-optimism\contracts\artifacts\contracts\optimistic-ethereum\OVM\bridge\tokens\OVM_L1ERC20Gateway.sol
 
 
 const App = () => {
@@ -25,26 +25,37 @@ const App = () => {
     const [balance, setBalance] = useState();
     const [txBeingSent, setTxBeingSent] = useState();
     const [transactionError, setTransactionError] = useState();
-    const [networkError, setNetworkError] = useState();
 
     //Web3Provider works for transactions but not JsonRpcProvider    
     //const _provider = new ethers.providers.JsonRpcProvider(targetNetwork.rpcUrl);
     const _provider = new ethers.providers.Web3Provider(window.ethereum);
-
-    const _token = new ethers.Contract(
-      contractAddress.ERC20,
-      ERC20Artifact.abi,
-      _provider
-    );
 
     const _gateway = new ethers.Contract(
       contractAddress.L1_Gateway,
       L1_GatewayArtifact.abi,
       _provider
     );
+
+    let _token;
+
+    if (window.ethereum.chainId === '0x2a') {
+      _token = new ethers.Contract(
+        contractAddress.ERC20,
+        ERC20Artifact.abi,
+        _provider
+      );
+    }
       
+    if (window.ethereum.chainId === '0x45') {
+      _token = new ethers.Contract(
+        contractAddress.L2ERC20,
+        L2ERC20Artifact.abi,
+        _provider
+      );
+    }
+
     const _connectWallet = async (t) => {
-      const [selectedAddress] = await window.ethereum.enable();
+      const [selectedAddress] = await window.ethereum.request({ method: 'eth_requestAccounts' });
 
       // if (!_checkNetwork()) {
       //   return;
@@ -95,7 +106,12 @@ const App = () => {
     const _deposit = async (amount) => {
       try {
         const signedGateway = _gateway.connect(_provider.getSigner(address));
+        const signedToken = _token.connect(_provider.getSigner(address));
+        console.log('approving transfer...')
+        const tx1 = await signedToken.approve(contractAddress.L1_Gateway, amount);
+        console.log('depositing to L2...')
         const tx = await signedGateway.deposit(amount)  
+        console.log(tx);
         setTxBeingSent(tx.hash);
         console.log(txBeingSent);
         const receipt = await tx.wait();
@@ -125,7 +141,7 @@ const App = () => {
     
     const _tokenBalance = async () => {
       if (address !== undefined) {
-        const balance = await _token.balanceOf(address) / (1e70) //Used to shrink the number, currently getting overflow
+        const balance = await _token.balanceOf(address) / 1 //Errors w/o the divide by 1
         setBalance(balance);        
       }
     }
@@ -140,7 +156,7 @@ const App = () => {
         <BrowserRouter>
           <Menu style={{ textAlign:"center" }} selectedKeys={[route]} mode="horizontal">
             <Menu.Item key="/">
-              <Link onClick={()=>{setRoute("/")}} to="/">Home</Link>
+              <Link onClick={()=>{setRoute("/withdraw")}} to="/withdraw">Withdraw</Link>
             </Menu.Item>
             <Menu.Item key="/transfer">
               <Link onClick={()=>{setRoute("/transfer")}} to="/transfer">Transfer</Link>
@@ -150,7 +166,7 @@ const App = () => {
             </Menu.Item>
           </Menu>
           <Switch>
-            <Route exact path="/"></Route>
+            <Route exact path="/withdraw"></Route>
   
             <Route exact path="/transfer"><Transfer 
                                              transfer={_transferTokens}
