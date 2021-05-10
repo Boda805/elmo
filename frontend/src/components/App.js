@@ -108,11 +108,12 @@ const App = () => {
       try {
         const signedGateway = _gateway.connect(_provider.getSigner(address));
         //Looks to not need approval
-        //const signedToken = _token.connect(_provider.getSigner(address));
-        //console.log('approving transfer...')
-        //const tx1 = await signedToken.approve(contractAddress.L1_Gateway, amount);
-        console.log('depositing to L2...')
-        const tx = await signedGateway.deposit(amount)  
+        const signedToken = _token.connect(_provider.getSigner(address));
+        console.log('approving transfer...');
+        const tx1 = await signedToken.approve(contractAddress.L1_Gateway, amount);
+        console.log('depositing to L2...');
+        var options = { gasPrice: 1, gasLimit: 85000 }
+        const tx = await signedGateway.deposit(amount);
         console.log(tx);
         setTxBeingSent(tx.hash);
         console.log(txBeingSent);
